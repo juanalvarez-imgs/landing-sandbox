@@ -1,0 +1,81 @@
+/* Base: reinicio, escalado de los lienzos y animaciones. Las medidas del diseño viven en figma.css. */
+*, *::before, *::after { box-sizing: border-box; border: 0 solid; margin: 0; padding: 0; }
+html { background: #000; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { background: #000; color: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; cursor: pointer; }
+a:focus-visible, button:focus-visible { outline: 2px solid #e5017a; outline-offset: 3px; }
+
+/* Cada lienzo conserva el ancho del marco de Figma y se escala al ancho de la ventana (js/main.js). */
+.lienzo { position: relative; overflow: hidden; overflow: clip; background: #000; zoom: var(--z, 1); }
+.lienzo [id] { scroll-margin-top: 24px; }
+.lienzo-d { width: 1440px; height: 6065px; }
+.lienzo-m { width: 390px; margin: 0 auto; display: none; }
+@media (max-width: 1023px) {
+  .lienzo-d { display: none; }
+  .lienzo-m { display: block; }
+}
+
+/* Menú móvil (el diseño solo trae el icono; se arma con los estilos del menú de escritorio). */
+.menu-m { position: fixed; inset: 0; z-index: 10; background: rgba(0, 0, 0, .94); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; font: 400 18px/24px 'Poppins', sans-serif; }
+.menu-m[hidden] { display: none; }
+.menu-m-cta { background: #fff; color: #000; font-weight: 600; border-radius: 12px; padding: 12px 48px; }
+.lienzo-m [data-menu] { z-index: 11; }
+@media (min-width: 1024px) { .menu-m { display: none; } }
+
+/* Movimiento. Base: timeline de Figma (flotación y entradas); ampliado a pedido del usuario. */
+@keyframes flota {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: var(--fx, 0px) var(--f); rotate: var(--fr, 0deg); }
+}
+.flota { animation: flota var(--ft, 8s) ease-in-out infinite; will-change: translate, rotate; }
+.f-astro { --f: -46px; --fx: 14px; --fr: -3deg; --ft: 7s; }   /* astronauta del hero (Figma: -12 px) */
+.f-final { --f: -26px; --fx: -8px; --fr: 1.5deg; --ft: 9s; }  /* astronauta del cierre (Figma: -10 px) */
+.f-casco { --f: -20px; --fr: -1.5deg; --ft: 8s; }             /* casco (Figma: -8 px) */
+.f-nave { --f: -18px; --fx: -16px; --fr: 1.2deg; --ft: 10s; }
+
+@keyframes entra { from { opacity: 0; translate: var(--dx, 0px) var(--dy, 0px); } to { opacity: 1; translate: 0 0; } }
+@keyframes entra-o { from { opacity: 0; } to { opacity: 1; } }
+.js .rv { opacity: 0; }
+.js .rv.visto { animation: entra var(--dur, 1000ms) cubic-bezier(.22, 1, .36, 1) var(--ret, 0ms) both; }
+.js .rv-o.visto { animation-name: entra-o; }  /* para nodos que ya usan translate para centrarse */
+.rv-a { --dy: 18px; --dur: 1150ms; --ret: 80ms; }
+.rv-b { --dy: 14px; --dur: 1200ms; --ret: 250ms; }
+.rv-c { --dy: 10px; --dur: 1050ms; --ret: 480ms; }
+.rv-d { --dy: 10px; --dur: 1050ms; --ret: 600ms; }
+.rv-h { --dy: 16px; --dur: 1400ms; }
+.rv-i { --dy: 12px; --dur: 1400ms; }
+.rv-s { --dy: 28px; }                 /* sube */
+.rv-l { --dx: -36px; }                /* entra desde la izquierda */
+.rv-r { --dx: 36px; }                 /* entra desde la derecha */
+.r1 { --ret: 120ms; } .r2 { --ret: 240ms; } .r3 { --ret: 360ms; } .r4 { --ret: 480ms; }
+
+/* Resaltados magenta: se despliegan de izquierda a derecha al entrar en pantalla. */
+.js .barra { scale: 0 1; transform-origin: left center; transition: scale .9s cubic-bezier(.22, 1, .36, 1) .35s; }
+.js .barra.visto { scale: 1 1; }
+.js .barra.b2 { transition-delay: .75s; }
+
+/* Paralaje con el scroll y con el puntero (js/main.js escribe las variables). */
+.par { translate: 0 var(--py, 0px); will-change: translate; }
+.sigue { transform: translate3d(var(--mx, 0px), var(--my, 0px), 0); transition: transform .6s cubic-bezier(.22, 1, .36, 1); }
+
+/* Respuesta al pasar el puntero. */
+.lienzo :is(a, button):not(.punto):not(.fm *) { transition: scale .25s ease, background-color .25s ease, box-shadow .25s ease, filter .25s ease; }
+@media (hover: hover) {
+  .lienzo :is(a, button):not(.punto):not(.fm *):hover { scale: 1.05; filter: brightness(1.12); }
+  .lienzo [data-demo]:hover { box-shadow: 0 0 28px rgba(245, 0, 122, .65); }
+  .paso { transition: background-color .3s ease, box-shadow .3s ease; }
+  .paso:hover { background-color: rgba(70, 70, 70, .5); box-shadow: 0 0 0 1px rgba(229, 1, 122, .45), 0 18px 40px rgba(229, 1, 122, .12); }
+  .porque { transition: filter .3s ease, box-shadow .3s ease; }
+  .porque:hover { filter: brightness(1.35); box-shadow: inset 0 -3px 0 #f5007a; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .flota { animation: none; }
+  .js .rv, .js .rv.visto { opacity: 1; animation: none; }
+  .js .barra { scale: 1 1; transition: none; }
+  .par { translate: none; }
+  .sigue { transform: none; }
+}
