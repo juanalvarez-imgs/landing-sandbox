@@ -53,15 +53,14 @@
     listaPasos.forEach(function (el) {
       if (!el.offsetWidth) return;
       if (sinMovimiento) { el.style.setProperty('--p', 1); return; }
-      var previo = Number(el.dataset.p || 0);
+      // Entra con una transición propia (CSS) al cruzar el umbral y vuelve a salir al subir.
       var r = el.getBoundingClientRect();
       var escala = r.width / el.offsetWidth || 1;
-      var arriba = r.top - (1 - previo) * 48 * escala; // posición sin el desplazamiento de entrada
-      var t = (vh * 0.95 - arriba) / (vh * 0.4);
-      t = Math.max(0, Math.min(1, t));
-      var p = 1 - Math.pow(1 - t, 3);
+      var arriba = r.top - (el.dataset.p === '1' ? 0 : 48 * escala); // sin el desplazamiento de entrada
+      var p = arriba < vh * 0.82 ? 1 : 0;
+      if (el.dataset.p === String(p)) return;
       el.dataset.p = p;
-      el.style.setProperty('--p', p.toFixed(3));
+      el.style.setProperty('--p', p);
     });
   }
   // Paralaje: los resplandores y el fondo se mueven a otra velocidad que el scroll.

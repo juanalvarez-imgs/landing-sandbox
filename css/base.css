@@ -10,7 +10,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e5017a; outline-offs
 /* Cada lienzo conserva el ancho del marco de Figma y se escala al ancho de la ventana (js/main.js). */
 .lienzo { position: relative; overflow: hidden; overflow: clip; background: #000; zoom: var(--z, 1); }
 .lienzo [id] { scroll-margin-top: 24px; }
-.lienzo-d { width: 1440px; height: 6065px; }
+.lienzo-d { width: 1440px; height: 5815px; }
 .lienzo-m { width: 390px; margin: 0 auto; display: none; }
 @media (max-width: 1023px) {
   .lienzo-d { display: none; }

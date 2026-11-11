@@ -56,7 +56,8 @@
 .punto[aria-current="true"] { width: 28px; background: #e5017a; }
 
 /* ---------- Pasos: aparecen según el avance del scroll ---------- */
-.js .paso { opacity: var(--p, 0); translate: 0 calc((1 - var(--p, 0)) * 48px); will-change: opacity, translate; }
+.js .paso { opacity: var(--p, 0); translate: 0 calc((1 - var(--p, 0)) * 48px); will-change: opacity, translate;
+  transition: opacity .9s cubic-bezier(.22, 1, .36, 1), translate .9s cubic-bezier(.22, 1, .36, 1), background-color .3s ease, box-shadow .3s ease; }
 
 /* ---------- Demo (figura del Sandbox QA) ---------- */
 .demo { width: min(1240px, 96vw); height: min(820px, 92vh); height: min(820px, 92dvh); margin: auto; padding: 0; border: 1px solid rgba(255, 255, 255, .14); border-radius: 16px; background: #0d0d0d; overflow: hidden; }
