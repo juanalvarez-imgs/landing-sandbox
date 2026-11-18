@@ -101,3 +101,8 @@
   .punto { transition: none; }
   .js .paso { opacity: 1; translate: none; }
 }
+
+/* titulo y filas de escritorio compactos (18/11): titulo en una linea y datos sin partir */
+.sbd-titulo { font-size: 50px; line-height: 54px; white-space: nowrap; }
+.sbd-fila dt { font-size: 22px; line-height: 30px; }
+.sbd-fila dd { font-size: 17px; line-height: 22px; padding: 4px 0; }
