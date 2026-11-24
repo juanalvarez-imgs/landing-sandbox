@@ -4,6 +4,9 @@
   // Destino del formulario: correo que recibe las solicitudes.
   var CORREO_CONTACTO = document.documentElement.dataset.correo || '';
   var ASUNTO = 'Quiero más información sobre el Sandbox';
+  // URL de la aplicación web de Apps Script (apps-script/Codigo.gs). Vacía = abre el correo del visitante.
+  var ENDPOINT = document.documentElement.dataset.endpoint || '';
+  var INICIO = Date.now();
 
   var lienzos = document.querySelectorAll('.lienzo');
   var sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -181,6 +184,7 @@
     var cuerpo = f.querySelector('.fm-cuerpo');
     var fin = f.querySelector('.fm-fin');
     var actual = 0;
+    var enviando = false;
 
     function mostrar(i, enfocar) {
       actual = i;
@@ -204,6 +208,7 @@
         return;
       }
       if (actual < pasosF.length - 1) { mostrar(actual + 1, true); return; }
+      if (enviando) return;
       var d = {};
       f.querySelectorAll('input').forEach(function (c) { d[c.name] = c.value.trim(); });
       var texto = 'Hola, quiero más información sobre el Sandbox.\n\n' +
@@ -213,14 +218,28 @@
         'Correo: ' + d.correo + '\n' +
         (d.telefono ? 'Teléfono: ' + d.telefono + '\n' : '');
       var enlace = 'mailto:' + CORREO_CONTACTO + '?subject=' + encodeURIComponent(ASUNTO) + '&body=' + encodeURIComponent(texto);
-      cuerpo.hidden = true;
-      f.querySelector('.fm-acciones').hidden = true;
-      var a = fin.querySelector('.fm-fin-correo');
-      a.textContent = CORREO_CONTACTO;
-      a.href = enlace;
-      fin.hidden = false;
-      fin.focus({ preventScroll: true });
-      window.location.href = enlace;
+
+      function terminar(clase) {
+        cuerpo.hidden = true;
+        f.querySelector('.fm-acciones').hidden = true;
+        fin.querySelectorAll('[data-fin]').forEach(function (b) { b.hidden = b.dataset.fin !== clase; });
+        fin.querySelectorAll('.fm-fin-correo').forEach(function (a) { a.textContent = CORREO_CONTACTO; a.href = enlace; });
+        fin.hidden = false;
+        fin.focus({ preventScroll: true });
+      }
+      // Sin endpoint configurado: comportamiento anterior (abre el correo del visitante).
+      if (!ENDPOINT) { terminar('correo'); window.location.href = enlace; return; }
+
+      enviando = true;
+      enviar.disabled = true;
+      enviar.textContent = 'Enviando…';
+      d.tiempo = Date.now() - INICIO;
+      d.pagina = location.href;
+      // text/plain evita la petición previa de CORS que Apps Script no responde.
+      fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) })
+        .then(function (r) { return r.json(); })
+        .then(function (r) { terminar(r && r.ok ? 'ok' : 'error'); })
+        .catch(function () { terminar('error'); });
     });
   });
 

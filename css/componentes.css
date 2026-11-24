@@ -86,6 +86,8 @@
 .fm-fin-texto { margin-top: 10px; font-size: 15px; line-height: 1.5; color: #333; }
 .fm-fin-correo { color: #003da2; text-decoration: underline; }
 .fm a:focus-visible, .fm button:focus-visible { outline-color: #003da2; }
+.fm-trampa { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.fm-enviar:disabled { opacity: .6; cursor: progress; }
 
 .lienzo-m .fm { padding: 0 20px 20px; }
 .lienzo-m .fm-cuerpo { margin-top: 52px; }
